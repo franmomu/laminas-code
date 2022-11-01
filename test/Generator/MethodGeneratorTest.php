@@ -16,6 +16,7 @@ use LaminasTest\Code\TestAsset\IterableHintsClass;
 use LaminasTest\Code\TestAsset\NullableReturnTypeHintedClass;
 use LaminasTest\Code\TestAsset\ObjectHintsClass;
 use LaminasTest\Code\TestAsset\Php80Types;
+use LaminasTest\Code\TestAsset\Php82Types;
 use LaminasTest\Code\TestAsset\ReturnTypeHintedClass;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -547,6 +548,40 @@ PHP;
             ],
             [Php80Types::class, 'staticType', 'static', 'static'],
             [Php80Types::class, 'selfAndBoolType', Php80Types::class . '|bool', '\\' . Php80Types::class . '|bool'],
+        ];
+    }
+
+    /**
+     * @requires PHP >= 8.2
+     * @group laminas/laminas-code#142
+     * @dataProvider php82Methods
+     * @psalm-param class-string $className
+     * @psalm-param non-empty-string $method
+     * @psalm-param non-empty-string $expectedGeneratedSignature
+     */
+    public function testGeneratedReturnTypeForPhp82ReturnType(
+        string $className,
+        string $method,
+        string $expectedType,
+        string $expectedGeneratedSignature
+    ): void {
+        $generator  = MethodGenerator::fromReflection(new MethodReflection($className, $method));
+        $returnType = $generator->getReturnType();
+
+        self::assertNotNull($returnType);
+        self::assertSame($expectedType, $returnType->__toString());
+        self::assertSame($expectedGeneratedSignature, $returnType->generate());
+    }
+
+    /**
+     * @psalm-return non-empty-list<array{class-string, non-empty-string, non-empty-string, non-empty-string}>
+     */
+    public function php82Methods(): array
+    {
+        return [
+            [Php82Types::class, 'falseType', 'false', 'false'],
+            [Php82Types::class, 'nullType', 'null', 'null'],
+            [Php82Types::class, 'unionNullableFalseType', 'false', '?false'],
         ];
     }
 }

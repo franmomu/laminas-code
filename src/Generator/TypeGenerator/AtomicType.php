@@ -13,6 +13,8 @@ use function sprintf;
 use function strtolower;
 use function substr;
 
+use const PHP_VERSION_ID;
+
 /**
  * Represents a single/indivisible (atomic) type, as supported by PHP.
  * This means that this object can be composed into more complex union, intersection
@@ -212,6 +214,11 @@ final class AtomicType
     /** @throws InvalidArgumentException */
     public function assertCanBeStandaloneNullable(): void
     {
+        // In PHP 8.2, `false` can be standalone nullable
+        if (PHP_VERSION_ID >= 80200 && 'false' === $this->type) {
+            return;
+        }
+
         if (array_key_exists($this->type, self::NOT_NULLABLE_TYPES)) {
             throw new InvalidArgumentException(sprintf(
                 'Type "%s" cannot be nullable',
@@ -222,6 +229,11 @@ final class AtomicType
 
     private function requiresUnionWithStandaloneType(): bool
     {
+        // PHP 8.2 allows `null` and `false` types as standalone
+        if (PHP_VERSION_ID >= 80200) {
+            return false;
+        }
+
         return 'null' === $this->type || 'false' === $this->type;
     }
 }

@@ -19,6 +19,7 @@ use LaminasTest\Code\TestAsset\NullableHintsClass;
 use LaminasTest\Code\TestAsset\NullNullableDefaultHintsClass;
 use LaminasTest\Code\TestAsset\ObjectHintsClass;
 use LaminasTest\Code\TestAsset\Php80Types;
+use LaminasTest\Code\TestAsset\Php82Types;
 use LaminasTest\Code\TestAsset\VariadicParametersClass;
 use Phar;
 use PHPUnit\Framework\TestCase;
@@ -671,6 +672,42 @@ class ParameterGeneratorTest extends TestCase
                 Php80Types::class . '|bool',
                 '\\' . Php80Types::class . '|bool $parameter',
             ],
+        ];
+    }
+
+    /**
+     * @requires PHP >= 8.2
+     * @group laminas/laminas-code#142
+     * @dataProvider php82Methods
+     * @psalm-param class-string $className
+     * @psalm-param non-empty-string $method
+     * @psalm-param positive-int|0 $parameterIndex
+     * @psalm-param non-empty-string $expectedGeneratedSignature
+     */
+    public function testGeneratedSignatureForPhp82ParameterType(
+        string $className,
+        string $method,
+        int $parameterIndex,
+        string $expectedType,
+        string $expectedGeneratedSignature
+    ): void {
+        $parameter = ParameterGenerator::fromReflection(
+            new ParameterReflection([$className, $method], $parameterIndex)
+        );
+
+        self::assertSame($expectedType, $parameter->getType());
+        self::assertSame($expectedGeneratedSignature, $parameter->generate());
+    }
+
+    /**
+     * @psalm-return non-empty-list<array{class-string, non-empty-string, positive-int|0, string, non-empty-string}>
+     */
+    public function php82Methods(): array
+    {
+        return [
+            [Php82Types::class, 'falseType', 0, 'false', 'false $parameter'],
+            [Php82Types::class, 'nullType', 0, 'null', 'null $parameter'],
+            [Php82Types::class, 'unionNullableFalseType', 0, 'false', '?false $parameter'],
         ];
     }
 

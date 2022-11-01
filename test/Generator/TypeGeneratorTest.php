@@ -10,10 +10,13 @@ use PHPUnit\Framework\TestCase;
 use function array_combine;
 use function array_filter;
 use function array_map;
+use function array_merge;
 use function class_implements;
 use function ltrim;
 use function str_replace;
 use function strpos;
+
+use const PHP_VERSION_ID;
 
 /**
  * @group zendframework/zend-code#29
@@ -216,6 +219,17 @@ class TypeGeneratorTest extends TestCase
             ['Foo\\Bar&\\Baz\\Tab', '\\Baz\\Tab&\\Foo\\Bar'],
         ];
 
+        if (PHP_VERSION_ID >= 80200) {
+            $validPHP82 = [
+                // The `false` and `null` types can be standalone
+                ['false', 'false'],
+                ['null', 'null'],
+                ['null|false', 'false|null'],
+            ];
+
+            $valid = array_merge($valid, $validPHP82);
+        }
+
         return array_combine(
             array_map('current', $valid),
             $valid
@@ -399,14 +413,6 @@ class TypeGeneratorTest extends TestCase
             ['never&Foo'],
             ['never&\\foo'],
 
-            // `false` and `null` must always be used as part of a union type
-            ['null'],
-            ['false'],
-            ['?null'],
-            ['?false'],
-            ['false|null'],
-            ['null|false'],
-
             // Duplicate types are rejected
             ['A|A'],
             ['A&A'],
@@ -422,7 +428,23 @@ class TypeGeneratorTest extends TestCase
             ['string|string|null'],
             ['string|null|string'],
             ['null|string|string'],
+
+            // Redundancy `?null`
+            ['?null'],
         ];
+
+        if (PHP_VERSION_ID < 80200) {
+            $invalidBelowPHP82 = [
+                // `false` and `null` must always be used as part of a union type
+                ['null'],
+                ['false'],
+                ['?false'],
+                ['false|null'],
+                ['null|false'],
+            ];
+
+            $invalid = array_merge($invalid, $invalidBelowPHP82);
+        }
 
         return array_combine(
             array_map('current', $invalid),
