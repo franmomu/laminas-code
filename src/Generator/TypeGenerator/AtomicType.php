@@ -44,8 +44,9 @@ final class AtomicType
         'mixed'    => 10,
         'void'     => 11,
         'false'    => 12,
-        'null'     => 13,
-        'never'    => 14,
+        'true'     => 13,
+        'null'     => 14,
+        'never'    => 15,
     ];
 
     /** @psalm-var array<non-empty-string, null> */

@@ -582,6 +582,7 @@ PHP;
             [Php82Types::class, 'falseType', 'false', 'false'],
             [Php82Types::class, 'nullType', 'null', 'null'],
             [Php82Types::class, 'unionNullableFalseType', 'false', '?false'],
+            [Php82Types::class, 'trueType', 'true', 'true'],
         ];
     }
 }

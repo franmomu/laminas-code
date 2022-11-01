@@ -225,6 +225,8 @@ class TypeGeneratorTest extends TestCase
                 ['false', 'false'],
                 ['null', 'null'],
                 ['null|false', 'false|null'],
+                ['true', 'true'],
+                ['null|true', 'true|null'],
             ];
 
             $valid = array_merge($valid, $validPHP82);

@@ -25,4 +25,9 @@ class Php82Types
     {
         throw new BadMethodCallException('Not supposed to be run');
     }
+
+    public function trueType(true $parameter): true
+    {
+        throw new BadMethodCallException('Not supposed to be run');
+    }
 }

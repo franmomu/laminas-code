@@ -708,6 +708,7 @@ class ParameterGeneratorTest extends TestCase
             [Php82Types::class, 'falseType', 0, 'false', 'false $parameter'],
             [Php82Types::class, 'nullType', 0, 'null', 'null $parameter'],
             [Php82Types::class, 'unionNullableFalseType', 0, 'false', '?false $parameter'],
+            [Php82Types::class, 'trueType', 0, 'true', 'true $parameter'],
         ];
     }
 
